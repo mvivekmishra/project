@@ -37,7 +37,7 @@ class main {
          $page = new $pageRequest;
 
 
-        if($_SERVER['REQUEST_METHOD'] == 'GET') 			{            $page->get();
+        if($_SERVER['REQUEST_METHOD'] == 'GET')             {            $page->get();
         } else {
             $page->post();
         }
@@ -74,38 +74,60 @@ class homepage extends page {
 
     public function get() {
         
-		//print_r(isset($_GET["csv"]));
-		if(isset($_GET["csv"])){
-		$tmpName = $_GET["csv"];
-    	     echo "<html><body><table border='1'>\n\n";
+            $file_result="";
+            
 
-	if(($handle = fopen($tmpName, 'r')) !== FALSE) 
+        //print_r(isset($_GET["csv"]));
+        if(isset($_GET["csv"])){
+            $x = pathinfo($_GET["csv"]);
+                 $file_result .= 
+                "Upload: ".$x["filename"]."<br>".
+                "Type:".$x["extension"]."<br>".
+            "Temp file: ".$x["filename"].".".$x["extension"]."<br>";
+              
+               if( copy($_GET["csv"], "//test.csv"))
+{
+    $file_result .= "File uploaded";
+}
+else
+{
+    $file_result .= "Not uploaded";
+}
+     // $tmpName = "C:\\xampp\\htdocs\\project\\test.csv";
+       $tmpName="text.csv"; 
+       echo "<html><body><table border='1'>\n\n";
+
+    if(($handle = fopen($tmpName, 'r')) !== FALSE) 
                   {
                         while(($data = fgetcsv($handle, 1000, ',')) !== FALSE) 
                         {
-                						echo "<tr>";
-                		        foreach ($data as $cell) 
+                                        echo "<tr>";
+                                foreach ($data as $cell) 
                             {
-                				    echo "<td>" . htmlspecialchars($cell) . "</td>";
-        										}
-       							        echo "</tr>\n";
-												}
-				          fclose($handle);
-		}
+                                    echo "<td>" . htmlspecialchars($cell) . "</td>";
+                                                }
+                                        echo "</tr>\n";
+                                                }
+                          fclose($handle);
+        }
+    $this->html .='homepage';
+    $this->html .=$file_result;
+
 exit();
 }
-        $form = '<form action="index2.php" method="GET" enctype="multipart/form-data">';
+        $form = '<form action="index.php" method="GET" enctype="multipart/form-data">';
         $form .= 'First name:<br>';
         $form .= '<input type="text" name="firstname" value="Vivek">';
         $form .= '<br>';
         $form .= 'Last name:<br>';
         $form .= '<input type="text" name="lastname" value="Mishra">';
-	   $form .='<br>';
-	   $form .= '<input type="file" name="csv" value="" />';
+       $form .='<br>';
+       $form .= '<input type="file" name="csv" value="" />';
        $form .= '<input type="submit" value="Submit">';
         $form .= '</form> ';
-	$this->html .='homepage';
-	$this->html .=$form;
+    $this->html .='homepage';
+    $this->html .=$form;
+
 
     }
 
@@ -116,7 +138,7 @@ class uploadform extends page
     public function get()
     {
         $form = '<form action="index2.php?page=uploadform" method="post"
-	enctype="multipart/form-data">';
+    enctype="multipart/form-data">';
         $form .= '<input type="file" name="fileToUpload" id="fileToUpload">';
         $form .= '<input type="submit" value="Upload Image" name="submit">';
         $form .= '</form> ';
