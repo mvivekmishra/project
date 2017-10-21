@@ -21,29 +21,21 @@ spl_autoload_register(array('Manage', 'autoload'));
 $obj = new main();
 
 
-class main {
+class main 
+{
 
     public function __construct()
     {
-        //print_r($_REQUEST);
-        //set default page request when no parameters are in URL
-        $pageRequest = 'homepage';
-        //check if there are parameters
-        if(isset($_REQUEST['page'])) {
-            //load the type of page the request wants into page request
-            $pageRequest = $_REQUEST['page'];
-        }
-        //instantiate the class that is being requested
-         $page = new $pageRequest;
-
-
-        if($_SERVER['REQUEST_METHOD'] == 'GET')             {            $page->get();
-        } else {
-            $page->post();
-        }
-
+                    $c1 = new Csv();
+                    $c2 = new htmltable();
+            if (!isset($_GET['filename'])) 
+            {
+                    $c1->homepage();
+            }                   
+            else {
+                    $c2->csvTable();
+                }
     }
-
 }
 
 abstract class page {
@@ -58,11 +50,11 @@ abstract class page {
     public function __destruct()
     {
         $this->html .= '</body></html>';
-        print_r($this->html);
+        stringFunctions::printThis($this->html);
     }
 
     public function get() {
-        //echo 'default get message';
+        echo 'default get message';
     }
 
     public function post() {
@@ -70,91 +62,39 @@ abstract class page {
     }
 }
 
-class homepage extends page {
 
-    public function get() {
-        
-            $file_result="";
-            
+class Csv {
+    /* Member functions */
 
-        //print_r(isset($_GET["csv"]));
-        if(isset($_GET["csv"])){
-            $x = pathinfo($_GET["csv"]);
-                 $file_result .= 
-                "Upload: ".$x["filename"]."<br>".
-                "Type:".$x["extension"]."<br>".
-            "Temp file: ".$x["filename"].".".$x["extension"]."<br>";
-              
-               if( copy($_GET["csv"], "//test.csv"))
-{
-    $file_result .= "File uploaded";
+    function homePage() {
+        echo 'Homepage<br/><br/><br/>
+          <form action="upload.php?upload_csv=1" method="POST" enctype="multipart/form-data">
+          <input type="file" name="csv" value="" />
+          <input type="submit" name="submit" value="Submit" />
+          </form>';
+    }
+
 }
-else
-{
-    $file_result .= "Not uploaded";
-}
-     // $tmpName = "C:\\xampp\\htdocs\\project\\test.csv";
-       $tmpName="text.csv"; 
-       echo "<html><body><table border='1'>\n\n";
 
-    if(($handle = fopen($tmpName, 'r')) !== FALSE) 
-                  {
-                        while(($data = fgetcsv($handle, 1000, ',')) !== FALSE) 
-                        {
-                                        echo "<tr>";
-                                foreach ($data as $cell) 
-                            {
-                                    echo "<td>" . htmlspecialchars($cell) . "</td>";
-                                                }
-                                        echo "</tr>\n";
-                                                }
-                          fclose($handle);
+Class htmltable{
+    
+    function csvTable() {
+        $file = $_GET['filename'];
+        echo "Homepage Upload : $file<br/>type:csv<br/>Temp File : $file<br/>File Uploaded";
+        $tmpName = 'uploads/' . $_GET['filename'];
+        echo "<html><body><table border='1'>\n\n";
+        if (($handle = fopen($tmpName, 'r')) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
+                echo "<tr>";
+                foreach ($data as $cell) {
+                    echo "<td>" . htmlspecialchars($cell) . "</td>";
+                }
+                echo "</tr>\n";
+            }
+            fclose($handle);
+            echo "\n</table></body></html>";
         }
-    $this->html .='homepage';
-    $this->html .=$file_result;
-
-exit();
-}
-        $form = '<form action="index.php" method="GET" enctype="multipart/form-data">';
-        $form .= 'First name:<br>';
-        $form .= '<input type="text" name="firstname" value="Vivek">';
-        $form .= '<br>';
-        $form .= 'Last name:<br>';
-        $form .= '<input type="text" name="lastname" value="Mishra">';
-       $form .='<br>';
-       $form .= '<input type="file" name="csv" value="" />';
-       $form .= '<input type="submit" value="Submit">';
-        $form .= '</form> ';
-    $this->html .='homepage';
-    $this->html .=$form;
-
-
     }
 
 }
-class uploadform extends page
-{
-
-    public function get()
-    {
-        $form = '<form action="index2.php?page=uploadform" method="post"
-    enctype="multipart/form-data">';
-        $form .= '<input type="file" name="fileToUpload" id="fileToUpload">';
-        $form .= '<input type="submit" value="Upload Image" name="submit">';
-        $form .= '</form> ';
-        $this->html .= '<h1>Upload Form</h1>';
-        $this->html .= $form;
-
-    }
-
-    public function post() {
-        echo 'test';
-        print_r($_FILES);
-    }
-}
-
-
-
-class htmlTable extends page {}
-
 ?>
