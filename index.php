@@ -26,16 +26,16 @@ class main
 
     public function __construct()
     {
-                    $c1 = new Csv();
-                    $c2 = new htmltable();
-            if (!isset($_GET['filename'])) 
-            {
-                    $c1->homepage();
-            }                   
-            else {
-                    $c2->csvTable();
-                }
-    }
+					$c1 = new Csv();
+					$c2 = new htmltable();
+			if (!isset($_GET['filename'])) 
+			{
+					$c1->homepage();
+			} 					
+			else {
+				    $c2->csvTable();
+				}
+	}
 }
 
 abstract class page {
@@ -77,11 +77,11 @@ class Csv {
 }
 
 Class htmltable{
-    
-    function csvTable() {
+	
+	function csvTable() {
         $file = $_GET['filename'];
         echo "Homepage Upload : $file<br/>type:csv<br/>Temp File : $file<br/>File Uploaded";
-        $tmpName = 'uploads/' . $_GET['filename'];
+        $tmpName = 'UPLOADS/' . $_GET['filename'];
         echo "<html><body><table border='1'>\n\n";
         if (($handle = fopen($tmpName, 'r')) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
@@ -98,3 +98,4 @@ Class htmltable{
 
 }
 ?>
+
